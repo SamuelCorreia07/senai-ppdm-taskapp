@@ -15,11 +15,11 @@ interface TaskDao {
     suspend fun insert(task: TaskEntity)
 
     // R- Read (Select All)
-    @Query("SELECT * FROM task_table ORDER BY id DESC")
+    @Query("SELECT * FROM task_table ORDER BY creation_date DESC")
     fun getAllTasks(): Flow<List<TaskEntity>>
 
-    // R - Read (Filtrado por status)
-    @Query("SELECT * FROM task_table WHERE is_completed = :isCompleted ORDER BY id DESC")
+    // R - Read (Select por Status - Filtro)
+    @Query("SELECT * FROM task_table WHERE is_completed = :isCompleted ORDER BY creation_date DESC")
     fun getTasksByStatus(isCompleted: Boolean): Flow<List<TaskEntity>>
 
     // U- Update
@@ -30,7 +30,13 @@ interface TaskDao {
     @Delete
     suspend fun delete(task: TaskEntity)
 
-    // D - Delete All (Opcional)
+    // D - Delete All
     @Query("DELETE FROM task_table")
     suspend fun deleteAll()
+
+    // U - Update Title (Apenas o título)
+    @Query("UPDATE task_table SET title = :newTitle WHERE id = :taskId")
+    suspend fun updateTitle(taskId: Int, newTitle: String)
+
+
 }

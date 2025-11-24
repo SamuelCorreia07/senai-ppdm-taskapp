@@ -1,5 +1,6 @@
 package com.example.taskapp
 
+import android.app.AlertDialog
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -10,6 +11,7 @@ import android.widget.EditText
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.example.taskapp.data.TaskEntity
 import com.example.taskapp.viewmodel.TaskFilterState
 import com.example.taskapp.viewmodel.TaskViewModel
 import com.example.taskapp.viewmodel.TaskViewModelFactory
@@ -46,16 +48,40 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupAdapter(rvTasks: RecyclerView) {
         adapter = TaskAdapter(
-            onTaskChecked = { task ->
-                // Chamada de Update
-                taskViewModel.update(task)
-            },
-            onDeleteClicked = { task ->
-                // Chamada de Delete
-                taskViewModel.delete(task)
+            onTaskChecked = { task -> taskViewModel.update(task) },
+            onDeleteClicked = { task -> taskViewModel.delete(task) },
+            // 3. Implementação do Clique Longo
+            onTaskLongClicked = { task ->
+                showEditTitleDialog(task)
             }
         )
         rvTasks.adapter = adapter
+    }
+
+    private fun showEditTitleDialog(task: TaskEntity) {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Editar Tarefa")
+
+        // Cria um campo de texto dentro do dialog
+        val input = EditText(this)
+        input.setText(task.title)
+        builder.setView(input)
+
+        // Botão Salvar
+        builder.setPositiveButton("Salvar") { _, _ ->
+            val newTitle = input.text.toString().trim()
+            if (newTitle.isNotEmpty()) {
+                // Chama o ViewModel para atualizar apenas o título
+                taskViewModel.updateTaskTitle(task.id, newTitle)
+            }
+        }
+
+        // Botão Cancelar
+        builder.setNegativeButton("Cancelar") { dialog, _ ->
+            dialog.cancel()
+        }
+
+        builder.show()
     }
 
     private fun setupObservers() {
@@ -74,9 +100,15 @@ class MainActivity : AppCompatActivity() {
     private fun setupClickListeners(etTaskTitle: EditText, btnAddTask: Button) {
         btnAddTask.setOnClickListener {
             val title = etTaskTitle.text.toString().trim()
+
             if (title.isNotEmpty()) {
                 taskViewModel.insert(title)
-                etTaskTitle.setText("") // Limpa o campo após inserir
+                etTaskTitle.setText("") // Limpa o texto
+                etTaskTitle.error = null // Remove o erro (caso estivesse aparecendo antes)
+            } else {
+                // Configura a mensagem de erro no input
+                etTaskTitle.error = "Por favor, digite uma tarefa!"
+                etTaskTitle.requestFocus() // Dá foco ao campo para o usuário digitar
             }
         }
     }

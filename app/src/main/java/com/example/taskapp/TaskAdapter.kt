@@ -15,7 +15,8 @@ import com.example.taskapp.data.TaskEntity
 class TaskAdapter(
     // Parâmetros: Duas funções lambda que receberão os eventos de clique
     private val onTaskChecked: (TaskEntity) -> Unit,
-    private val onDeleteClicked: (TaskEntity) -> Unit
+    private val onDeleteClicked: (TaskEntity) -> Unit,
+    private val onTaskLongClicked: (TaskEntity) -> Unit
 ) : ListAdapter<TaskEntity, TaskAdapter.TaskViewHolder>(TaskDiffCallback()) {
 
     // Cria o ViewHolder (a representação visual de cada item)
@@ -56,6 +57,12 @@ class TaskAdapter(
             btnDelete.setOnClickListener {
                 // Chama a função lambda passada para o adapter
                 onDeleteClicked(task)
+            }
+
+            // Configurar o Long Click na linha inteira (itemView)
+            itemView.setOnLongClickListener {
+                onTaskLongClicked(task)
+                true // Retorna true para indicar que o evento foi consumido
             }
         }
 

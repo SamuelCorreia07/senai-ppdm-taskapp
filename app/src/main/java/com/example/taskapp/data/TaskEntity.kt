@@ -13,5 +13,8 @@ data class TaskEntity(
     val title: String,
 
     @ColumnInfo(name = "is_completed")
-    val isCompleted: Boolean = false
+    val isCompleted: Boolean = false,
+
+    @ColumnInfo(name = "creation_date")
+    val creationDate: Long = System.currentTimeMillis()
 )

@@ -1,4 +1,3 @@
-// viewmodel/TaskViewModel.kt
 package com.example.taskapp.viewmodel
 
 import androidx.lifecycle.ViewModel
@@ -35,7 +34,7 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
         _filterState.value = filter
     }
 
-    // --- Operações CRUD (sem alteração) ---
+    // --- Operações CRUD ---
     fun insert(title: String) = viewModelScope.launch {
         val newTask = TaskEntity(title = title)
         repository.insert(newTask)
@@ -47,6 +46,10 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
 
     fun delete(task: TaskEntity) = viewModelScope.launch {
         repository.delete(task)
+    }
+
+    fun updateTaskTitle(taskId: Int, newTitle: String) = viewModelScope.launch {
+        repository.updateTitle(taskId, newTitle)
     }
 }
 

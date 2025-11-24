@@ -25,4 +25,8 @@ class TaskRepository(private val taskDao: TaskDao) {
     fun getTasksByStatus(isCompleted: Boolean): Flow<List<TaskEntity>> {
         return taskDao.getTasksByStatus(isCompleted)
     }
+
+    suspend fun updateTitle(taskId: Int, newTitle: String) {
+        taskDao.updateTitle(taskId, newTitle)
+    }
 }
